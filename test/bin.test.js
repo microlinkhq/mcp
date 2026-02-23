@@ -6,13 +6,13 @@ import { access, readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
 const packageJsonUrl = new URL('../package.json', import.meta.url)
-const binUrl = new URL('../bin/microlink-mcp-stdio.js', import.meta.url)
+const binUrl = new URL('../bin/microlink-mcp.js', import.meta.url)
 
-test('package.json exposes microlink-mcp-stdio bin entry', async () => {
+test('package.json exposes microlink-mcp bin entry', async () => {
   const pkgRaw = await readFile(packageJsonUrl, 'utf8')
   const pkg = JSON.parse(pkgRaw)
 
-  assert.equal(pkg.bin['microlink-mcp-stdio'], './bin/microlink-mcp-stdio.js')
+  assert.equal(pkg.bin['microlink-mcp'], './bin/microlink-mcp.js')
 })
 
 test('bin file has node shebang and executable permissions', async () => {

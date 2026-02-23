@@ -1,10 +1,10 @@
 {
-  "name": "@microlink/mcp-stdio",
-  "description": "Stdio MCP server for Microlink API",
+  "name": "@microlink/mcp",
+  "description": "MCP server for Microlink API",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "microlink-mcp-stdio": "./bin/microlink-mcp-stdio.js"
+    "microlink-mcp": "./bin/microlink-mcp.js"
   },
   "exports": {
     ".": "./src/index.js"
