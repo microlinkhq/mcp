@@ -4,10 +4,12 @@ import assert from 'node:assert/strict'
 import {
   extractInputSchema,
   insightsInputSchema,
+  markdownInputSchema,
   metaInputSchema,
   paletteInputSchema,
   pdfInputSchema,
-  screenshotInputSchema
+  screenshotInputSchema,
+  textInputSchema
 } from '../src/schemas.js'
 
 test('extract schema accepts minimal valid payload', () => {
@@ -185,4 +187,58 @@ test('insights schema accepts lighthouse config object', () => {
   })
 
   assert.equal(result.success, true)
+})
+
+test('markdown schema accepts minimal valid payload', () => {
+  const result = markdownInputSchema.safeParse({
+    url: 'https://microlink.io'
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('markdown schema accepts optional apiKey', () => {
+  const result = markdownInputSchema.safeParse({
+    url: 'https://microlink.io',
+    apiKey: 'my-key'
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('markdown schema rejects unknown top-level keys', () => {
+  const result = markdownInputSchema.safeParse({
+    url: 'https://microlink.io',
+    unknownParam: true
+  })
+
+  assert.equal(result.success, false)
+  assert.match(result.error.issues[0].message, /Unrecognized key|unrecognized key/i)
+})
+
+test('text schema accepts minimal valid payload', () => {
+  const result = textInputSchema.safeParse({
+    url: 'https://microlink.io'
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('text schema accepts optional apiKey', () => {
+  const result = textInputSchema.safeParse({
+    url: 'https://microlink.io',
+    apiKey: 'my-key'
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('text schema rejects unknown top-level keys', () => {
+  const result = textInputSchema.safeParse({
+    url: 'https://microlink.io',
+    unknownParam: true
+  })
+
+  assert.equal(result.success, false)
+  assert.match(result.error.issues[0].message, /Unrecognized key|unrecognized key/i)
 })

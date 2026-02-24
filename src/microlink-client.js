@@ -179,6 +179,67 @@ export async function callMicrolink ({ params, forcedFlags = {} }) {
   }
 }
 
+export async function callMicrolinkEmbed ({ params, forcedFlags = {} }) {
+  const { url, apiKey: requestApiKey, ...rawOpts } = params
+  const envApiKey = process.env.MICROLINK_API_KEY
+  const apiKey = requestApiKey || envApiKey
+  const opts = withForcedFlags(rawOpts, forcedFlags)
+
+  if (apiKey) {
+    opts.apiKey = apiKey
+  }
+
+  const [requestUrl] = mql.getApiUrl(url, opts, {
+    headers: {
+      accept: 'text/plain'
+    }
+  })
+
+  const response = await fetch(requestUrl, {
+    headers: {
+      accept: 'text/plain'
+    }
+  })
+
+  const text = await response.text()
+
+  if (!response.ok) {
+    let errorBody
+    try {
+      errorBody = JSON.parse(text)
+    } catch {
+      errorBody = { status: 'error', message: text }
+    }
+    return { ok: false, statusCode: response.status, body: text, error: errorBody }
+  }
+
+  return { ok: true, statusCode: response.status, body: text }
+}
+
+export function asEmbedToolResult (result) {
+  if (!result.ok) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(result.error, null, 2)
+        }
+      ]
+    }
+  }
+
+  return {
+    isError: false,
+    content: [
+      {
+        type: 'text',
+        text: result.body
+      }
+    ]
+  }
+}
+
 export function asToolResult (result) {
   const output = {
     endpoint: result.endpoint,

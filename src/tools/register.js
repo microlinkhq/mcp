@@ -1,4 +1,4 @@
-import { asToolResult, callMicrolink } from '../microlink-client.js'
+import { asToolResult, callMicrolink, asEmbedToolResult, callMicrolinkEmbed } from '../microlink-client.js'
 
 function getHeaderValueCaseInsensitive (headers, headerName) {
   if (!headers || typeof headers !== 'object') {
@@ -41,6 +41,72 @@ function getApiKeyFromRequestHeaders (headers) {
   }
 
   return undefined
+}
+
+export function registerEmbed (server, name, description, inputSchema, forcedFlags) {
+  server.registerTool(
+    name,
+    {
+      description,
+      inputSchema
+    },
+    async (args, extra) => {
+      const parsedArgs = inputSchema.safeParse(args)
+      if (!parsedArgs.success) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(
+                {
+                  message: 'Input validation failed.',
+                  issues: parsedArgs.error.issues
+                },
+                null,
+                2
+              )
+            }
+          ]
+        }
+      }
+
+      try {
+        const headerApiKey = getApiKeyFromRequestHeaders(extra?.requestInfo?.headers)
+        const params =
+          parsedArgs.data.apiKey || !headerApiKey
+            ? parsedArgs.data
+            : {
+                ...parsedArgs.data,
+                apiKey: headerApiKey
+              }
+
+        const result = await callMicrolinkEmbed({
+          params,
+          forcedFlags
+        })
+
+        return asEmbedToolResult(result)
+      } catch (error) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(
+                {
+                  message: 'Microlink request failed before receiving an API response.',
+                  error: error instanceof Error ? error.message : String(error)
+                },
+                null,
+                2
+              )
+            }
+          ]
+        }
+      }
+    }
+  )
 }
 
 export function register (server, name, description, inputSchema, forcedFlags) {

@@ -207,3 +207,7 @@ export const metaInputSchema = baseSchema
     meta: z.union([z.boolean(), metaConfigSchema]).optional()
   })
   .strict()
+
+export const markdownInputSchema = baseSchema.strict()
+
+export const textInputSchema = baseSchema.strict()
