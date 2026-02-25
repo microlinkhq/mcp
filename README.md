@@ -403,6 +403,8 @@ The `MICROLINK_API_KEY` environment variable is the recommended approach for mos
 
 If an API key is present, requests are sent to `https://pro.microlink.io`; otherwise they go to `https://api.microlink.io` (free endpoint).
 
+When the free endpoint returns `429`, this MCP adds a clear hint in the tool error message: free daily quota reached (`50 requests/day`) and upgrade/API key guidance at [microlink.io/#pricing](https://microlink.io/#pricing).
+
 ## Development
 
 ```bash

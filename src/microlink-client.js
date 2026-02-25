@@ -15,6 +15,10 @@ const RESPONSE_HEADER_KEYS = [
   'content-encoding'
 ]
 
+const FREE_ENDPOINT_ORIGIN = 'https://api.microlink.io'
+const FREE_QUOTA_EXCEEDED_HINT =
+  'Free daily quota reached (50 requests/day). Extend your limit by getting an API key at https://microlink.io/#pricing.'
+
 function isPlainObject (value) {
   return Object.prototype.toString.call(value) === '[object Object]'
 }
@@ -106,11 +110,29 @@ function stripResponseFromBody (body) {
   return payload
 }
 
-function toErrorBody (error, requestUrl) {
+function withFreeQuotaHint (message, { requestUrl, statusCode }) {
+  const endpoint = getEndpointFromRequestUrl(requestUrl)
+
+  if (endpoint !== FREE_ENDPOINT_ORIGIN || statusCode !== 429) {
+    return message
+  }
+
+  if (typeof message === 'string' && message.includes('50 requests/day')) {
+    return message
+  }
+
+  if (typeof message === 'string' && message.trim().length > 0) {
+    return `${message} ${FREE_QUOTA_EXCEEDED_HINT}`
+  }
+
+  return FREE_QUOTA_EXCEEDED_HINT
+}
+
+function toErrorBody (error, requestUrl, statusCode) {
   if (!isObject(error)) {
     return {
       status: 'error',
-      message: error instanceof Error ? error.message : String(error),
+      message: withFreeQuotaHint(error instanceof Error ? error.message : String(error), { requestUrl, statusCode }),
       url: requestUrl
     }
   }
@@ -130,6 +152,7 @@ function toErrorBody (error, requestUrl) {
   if (payload.message === undefined) {
     payload.message = error.message || 'Microlink request failed.'
   }
+  payload.message = withFreeQuotaHint(payload.message, { requestUrl, statusCode })
 
   if (payload.url === undefined) {
     payload.url = requestUrl
@@ -176,7 +199,7 @@ export async function callMicrolink ({ params, forcedFlags = {} }) {
       finalUrl: error?.url ?? requestUrl,
       endpoint,
       headers: pickResponseHeaders(error?.headers),
-      body: toErrorBody(error, requestUrl)
+      body: toErrorBody(error, requestUrl, error?.statusCode ?? 500)
     }
   }
 }

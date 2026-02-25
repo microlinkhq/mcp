@@ -294,10 +294,54 @@ test('preserves Microlink API error payload, status code, and response headers',
   assert.equal(result.body.code, 'ERATELIMIT')
   assert.equal(result.body.id, 'err_123')
   assert.equal(result.body.report, 'https://example.com/report/err_123')
-  assert.match(result.body.message, /^ERATELIMIT, Rate limit reached\.$/)
+  assert.match(result.body.message, /^ERATELIMIT, Rate limit reached\./)
+  assert.match(result.body.message, /50 requests\/day/)
+  assert.match(result.body.message, /microlink\.io\/#pricing/)
   assert.equal(result.body.more, 'https://microlink.io/eratelimit')
   assert.equal(result.headers['x-request-id'], 'req_123')
   assert.equal(result.headers['x-rate-limit-remaining'], '0')
+})
+
+test('does not append free daily quota hint for 429 responses on pro endpoint', async t => {
+  const originalFetch = globalThis.fetch
+
+  t.after(() => {
+    globalThis.fetch = originalFetch
+  })
+
+  globalThis.fetch = async () => {
+    return new Response(
+      JSON.stringify({
+        status: 'fail',
+        code: 'ERATELIMIT',
+        message: 'Rate limit reached.',
+        more: 'https://microlink.io/eratelimit',
+        data: {
+          url: 'Rate limit reached.'
+        }
+      }),
+      {
+        status: 429,
+        headers: {
+          'content-type': 'application/json; charset=utf-8'
+        }
+      }
+    )
+  }
+
+  const result = await callMicrolink({
+    params: {
+      url: 'https://example.com',
+      apiKey: 'pro-key'
+    }
+  })
+
+  assert.equal(result.ok, false)
+  assert.equal(result.statusCode, 429)
+  assert.equal(result.endpoint, 'https://pro.microlink.io')
+  assert.match(result.body.message, /^ERATELIMIT, Rate limit reached\.$/)
+  assert.doesNotMatch(result.body.message, /50 requests\/day/)
+  assert.doesNotMatch(result.body.message, /microlink\.io\/#pricing/)
 })
 
 test('coerces non-json responses into structured error payload', async t => {
