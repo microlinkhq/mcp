@@ -154,12 +154,16 @@ Add to your Cursor MCP settings (`.cursor/mcp.json`):
 - Embed tools (`microlink_markdown`, `microlink_text`) return plain text in `content[0].text`.
 
 Parameters labeled `PRO` in the official Microlink docs require a paid plan.
+For compatibility with some MCP clients:
+- boolean parameters also accept the strings `"true"` and `"false"` and are normalized before validation.
+- parameters that accept objects also accept JSON stringified objects (for example, `screenshot: "{\"overlay\":{\"browser\":\"dark\"}}"`).
 
 ### `microlink_extract`
 
 Extract structured metadata from any public URL. Returns normalized fields (`title`, `description`, `author`, `publisher`, `date`, `image`, `logo`, `lang`, `url`) plus any custom fields defined via CSS selectors.
 
 Supports combining multiple features in a single request: screenshot, PDF, video, audio, insights, and palette.
+For `screenshot`, `pdf`, and `insights`, use `true` for defaults or an object for options. Empty objects (`{}`) are treated as `true`.
 
 **Key parameters:**
 
@@ -207,12 +211,14 @@ Supports combining multiple features in a single request: screenshot, PDF, video
 ### `microlink_screenshot`
 
 Capture a screenshot of any public URL and receive a permanent CDN asset URL (`data.screenshot.url`).
+Set `screenshot` to `true` for defaults, or pass `screenshot: { ... }` for options. `screenshot: {}` is treated as `true`.
 
 **Key parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `url` | `string` | The URL to screenshot *(required)* |
+| `screenshot` | `boolean \| object` | Enable screenshot with defaults (`true`) or provide screenshot options (`{...}`); `{}` behaves as `true` |
 | `screenshot.fullPage` | `boolean` | Capture the full scrollable page |
 | `screenshot.element` | `string` | CSS selector to capture a specific element |
 | `screenshot.type` | `"jpeg" \| "png"` | Output format (default: `"png"`) |
@@ -250,12 +256,14 @@ Capture a screenshot of any public URL and receive a permanent CDN asset URL (`d
 ### `microlink_pdf`
 
 Generate a PDF of any public URL and receive a permanent CDN asset URL (`data.pdf.url`).
+Set `pdf` to `true` for defaults, or pass `pdf: { ... }` for options. `pdf: {}` is treated as `true`.
 
 **Key parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `url` | `string` | The URL to convert *(required)* |
+| `pdf` | `boolean \| object` | Enable PDF with defaults (`true`) or provide PDF options (`{...}`); `{}` behaves as `true` |
 | `pdf.format` | `string` | Paper size: `"A4"` (default), `"Letter"`, `"Legal"`, `"Tabloid"`, `"Ledger"`, `"A0"`–`"A6"` |
 | `pdf.landscape` | `boolean` | Landscape orientation |
 | `pdf.margin` | `string \| object` | Page margins (e.g. `"0.35cm"` or `{top, bottom, left, right}`) |
@@ -322,12 +330,14 @@ Supports SoundCloud, Spotify, Mixcloud, and other audio platforms.
 ### `microlink_insights`
 
 Get web performance and technology-stack insights for any URL.
+Set `insights` to `true` for defaults, or pass `insights: { ... }` for options. `insights: {}` is treated as `true`.
 
 **Key parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `url` | `string` | The URL to analyze *(required)* |
+| `insights` | `boolean \| object` | Enable default insights (`true`) or provide insights options (`{...}`); `{}` behaves as `true` |
 | `insights.lighthouse` | `boolean \| object` | Run a Lighthouse audit |
 | `insights.lighthouse.output` | `"json" \| "html" \| "csv"` | Report format (default: `"json"`) |
 | `insights.lighthouse.preset` | `string` | Audit preset: `"default"`, `"desktop"`, `"perf"`, `"experimental"`, `"full"`, `"lr-desktop"`, `"lr-mobile"` |

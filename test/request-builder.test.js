@@ -242,6 +242,34 @@ test('adds forced flag when option object is present but empty', async t => {
   })
 })
 
+test('normalizes empty object toggles to true without forced flags', async t => {
+  const originalFetch = globalThis.fetch
+
+  t.after(() => {
+    globalThis.fetch = originalFetch
+  })
+
+  globalThis.fetch = async (input, init) => {
+    const request = getRequestSnapshot(input, init)
+    const url = request.url
+
+    assert.equal(url.searchParams.get('screenshot'), 'true')
+    assert.equal(url.searchParams.get('pdf'), 'true')
+    assert.equal(url.searchParams.get('insights'), 'true')
+
+    return makeJsonResponse({ status: 'success', data: {} })
+  }
+
+  await callMicrolink({
+    params: {
+      url: 'https://example.com',
+      screenshot: {},
+      pdf: {},
+      insights: {}
+    }
+  })
+})
+
 test('preserves Microlink API error payload, status code, and response headers', async t => {
   const originalFetch = globalThis.fetch
   const originalEnvKey = process.env.MICROLINK_API_KEY

@@ -8,6 +8,7 @@ export function pdf (server) {
     [
       'Generate a PDF of any public URL via Microlink and return a permanent CDN asset URL.',
       'The PDF URL is in `data.pdf.url`.',
+      'Pass `pdf: true` for defaults or `pdf: { ... }` for options; `pdf: {}` is treated as `true`.',
       'Use `pdf.format` to set paper size: "A4" (default), "Letter", "Legal", "Tabloid", "Ledger", "A0"–"A6".',
       'Use `pdf.landscape` to switch to landscape orientation.',
       'Use `pdf.margin` to set page margins as a string ("0.35cm") or object with top/bottom/left/right.',

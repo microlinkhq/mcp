@@ -18,6 +18,7 @@ const RESPONSE_HEADER_KEYS = [
 const FREE_ENDPOINT_ORIGIN = 'https://api.microlink.io'
 const FREE_QUOTA_EXCEEDED_HINT =
   'Free daily quota reached (50 requests/day). Extend your limit by getting an API key at https://microlink.io/#pricing.'
+const EMPTY_OBJECT_MEANS_TRUE_FLAGS = ['screenshot', 'pdf', 'insights']
 
 function isPlainObject (value) {
   return Object.prototype.toString.call(value) === '[object Object]'
@@ -83,6 +84,14 @@ function pickResponseHeaders (headers) {
 
 function withForcedFlags (opts, forcedFlags = {}) {
   const nextOpts = { ...opts }
+
+  // Microlink treats empty objects for these toggles as enabled defaults.
+  // Normalize `{}` -> `true` so query serialization always keeps the flag.
+  for (const flagName of EMPTY_OBJECT_MEANS_TRUE_FLAGS) {
+    if (isPlainObject(nextOpts[flagName]) && !hasSerializableValue(nextOpts[flagName])) {
+      nextOpts[flagName] = true
+    }
+  }
 
   for (const [flagName, flagValue] of Object.entries(forcedFlags)) {
     if (!hasSerializableValue(nextOpts[flagName])) {

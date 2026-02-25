@@ -64,6 +64,41 @@ test('screenshot schema accepts boolean toggle', () => {
   assert.equal(result.success, true)
 })
 
+test('screenshot schema coerces string booleans for toggle and nested options', () => {
+  const result = screenshotInputSchema.safeParse({
+    url: 'https://microlink.io',
+    screenshot: {
+      fullPage: 'true',
+      omitBackground: 'false'
+    }
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.screenshot.fullPage, true)
+  assert.equal(result.data.screenshot.omitBackground, false)
+})
+
+test('screenshot schema coerces string toggle value', () => {
+  const result = screenshotInputSchema.safeParse({
+    url: 'https://microlink.io',
+    screenshot: 'true'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.screenshot, true)
+})
+
+test('screenshot schema parses stringified object config', () => {
+  const result = screenshotInputSchema.safeParse({
+    url: 'https://microlink.io',
+    screenshot: '{"overlay":{"browser":"dark"},"fullPage":"true"}'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.screenshot.overlay.browser, 'dark')
+  assert.equal(result.data.screenshot.fullPage, true)
+})
+
 test('pdf schema rejects scale values out of allowed range', () => {
   const result = pdfInputSchema.safeParse({
     url: 'https://microlink.io',
@@ -82,6 +117,39 @@ test('pdf schema accepts boolean toggle', () => {
   })
 
   assert.equal(result.success, true)
+})
+
+test('pdf schema coerces string boolean landscape value', () => {
+  const result = pdfInputSchema.safeParse({
+    url: 'https://microlink.io',
+    pdf: {
+      landscape: 'true'
+    }
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.pdf.landscape, true)
+})
+
+test('pdf schema coerces string toggle value', () => {
+  const result = pdfInputSchema.safeParse({
+    url: 'https://microlink.io',
+    pdf: 'true'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.pdf, true)
+})
+
+test('pdf schema parses stringified object config', () => {
+  const result = pdfInputSchema.safeParse({
+    url: 'https://microlink.io',
+    pdf: '{"landscape":"true","margin":{"top":"1cm"}}'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.pdf.landscape, true)
+  assert.equal(result.data.pdf.margin.top, '1cm')
 })
 
 test('data schema accepts a valid single rule object', () => {
@@ -145,6 +213,28 @@ test('meta schema accepts config object with include/exclude fields', () => {
   })
 
   assert.equal(result.success, true)
+})
+
+test('meta schema coerces string booleans in config object', () => {
+  const result = metaInputSchema.safeParse({
+    url: 'https://microlink.io',
+    meta: { logo: 'true', image: 'false' }
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.meta.logo, true)
+  assert.equal(result.data.meta.image, false)
+})
+
+test('meta schema parses stringified config object', () => {
+  const result = metaInputSchema.safeParse({
+    url: 'https://microlink.io',
+    meta: '{"title":"true","logo":"false"}'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.meta.title, true)
+  assert.equal(result.data.meta.logo, false)
 })
 
 test('meta schema rejects unknown fields in config object', () => {
@@ -218,6 +308,41 @@ test('insights schema accepts boolean toggle', () => {
   assert.equal(result.success, true)
 })
 
+test('insights schema coerces string booleans in nested settings', () => {
+  const result = insightsInputSchema.safeParse({
+    url: 'https://microlink.io',
+    insights: {
+      lighthouse: 'true',
+      technologies: 'false'
+    }
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.insights.lighthouse, true)
+  assert.equal(result.data.insights.technologies, false)
+})
+
+test('insights schema coerces string toggle value', () => {
+  const result = insightsInputSchema.safeParse({
+    url: 'https://microlink.io',
+    insights: 'true'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.insights, true)
+})
+
+test('insights schema parses stringified object config', () => {
+  const result = insightsInputSchema.safeParse({
+    url: 'https://microlink.io',
+    insights: '{"lighthouse":{"output":"html"},"technologies":"false"}'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.insights.lighthouse.output, 'html')
+  assert.equal(result.data.insights.technologies, false)
+})
+
 test('video schema accepts proxy configuration', () => {
   const result = videoInputSchema.safeParse({
     url: 'https://microlink.io',
@@ -229,6 +354,17 @@ test('video schema accepts proxy configuration', () => {
   assert.equal(result.success, true)
 })
 
+test('video schema parses stringified proxy object', () => {
+  const result = videoInputSchema.safeParse({
+    url: 'https://microlink.io',
+    proxy: '{"endpoint":"https://proxy.example.com"}'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(typeof result.data.proxy, 'object')
+  assert.equal(result.data.proxy.endpoint, 'https://proxy.example.com')
+})
+
 test('audio schema accepts proxy configuration', () => {
   const result = audioInputSchema.safeParse({
     url: 'https://microlink.io',
@@ -236,6 +372,64 @@ test('audio schema accepts proxy configuration', () => {
   })
 
   assert.equal(result.success, true)
+})
+
+test('extract schema coerces string booleans for boolean attributes', () => {
+  const result = extractInputSchema.safeParse({
+    url: 'https://microlink.io',
+    adblock: 'true',
+    animations: 'false',
+    force: 'true',
+    javascript: 'false',
+    audio: 'true',
+    video: 'false',
+    palette: 'true',
+    pdf: 'true',
+    screenshot: 'true',
+    insights: 'false',
+    viewport: {
+      isMobile: 'true',
+      hasTouch: 'false',
+      isLandscape: 'true'
+    }
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.adblock, true)
+  assert.equal(result.data.animations, false)
+  assert.equal(result.data.force, true)
+  assert.equal(result.data.javascript, false)
+  assert.equal(result.data.audio, true)
+  assert.equal(result.data.video, false)
+  assert.equal(result.data.palette, true)
+  assert.equal(result.data.pdf, true)
+  assert.equal(result.data.screenshot, true)
+  assert.equal(result.data.insights, false)
+  assert.equal(result.data.viewport.isMobile, true)
+  assert.equal(result.data.viewport.hasTouch, false)
+  assert.equal(result.data.viewport.isLandscape, true)
+})
+
+test('extract schema parses stringified object attributes', () => {
+  const result = extractInputSchema.safeParse({
+    url: 'https://microlink.io',
+    screenshot: '{"overlay":{"browser":"dark"}}',
+    pdf: '{"landscape":"true"}',
+    insights: '{"technologies":"false"}',
+    viewport: '{"width":1280,"isMobile":"true"}',
+    headers: '{"accept-language":"en-US","x-debug":"true"}',
+    data: '{"price":{"selector":".price","type":"number"}}'
+  })
+
+  assert.equal(result.success, true)
+  assert.equal(result.data.screenshot.overlay.browser, 'dark')
+  assert.equal(result.data.pdf.landscape, true)
+  assert.equal(result.data.insights.technologies, false)
+  assert.equal(result.data.viewport.width, 1280)
+  assert.equal(result.data.viewport.isMobile, true)
+  assert.equal(result.data.headers['accept-language'], 'en-US')
+  assert.equal(result.data.headers['x-debug'], 'true')
+  assert.equal(result.data.data.price.selector, '.price')
 })
 
 test('markdown schema accepts minimal valid payload', () => {

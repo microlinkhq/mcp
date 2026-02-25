@@ -7,6 +7,7 @@ export function insights (server) {
     'microlink_insights',
     [
       'Get web performance and technology-stack insights for any URL via Microlink.',
+      'Pass `insights: true` for defaults or `insights: { ... }` for options; `insights: {}` is treated as `true`.',
       'Use `insights.lighthouse` (true or config object) for a Lighthouse performance audit.',
       '  - `insights.lighthouse.output`: report format — "json" (default), "html", or "csv".',
       '  - `insights.lighthouse.preset`: "default", "desktop", "perf", "experimental", "full", "lr-desktop", "lr-mobile".',
