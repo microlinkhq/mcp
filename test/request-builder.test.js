@@ -99,7 +99,9 @@ test('uses request apiKey, routes to pro endpoint, and strips apiKey from query'
       {
         headers: {
           'x-request-id': 'abc-123',
-          'x-cache-status': 'HIT'
+          'x-cache-status': 'HIT',
+          'cf-cache-status': 'HIT',
+          'cache-control': 'public, max-age=60'
         }
       }
     )
@@ -115,6 +117,8 @@ test('uses request apiKey, routes to pro endpoint, and strips apiKey from query'
   assert.equal(result.endpoint, 'https://pro.microlink.io')
   assert.equal(result.headers['x-request-id'], 'abc-123')
   assert.equal(result.headers['x-cache-status'], 'HIT')
+  assert.equal(result.headers['cf-cache-status'], 'HIT')
+  assert.equal(result.headers['cache-control'], 'public, max-age=60')
 })
 
 test('uses MICROLINK_API_KEY env var when request apiKey is missing', async t => {
@@ -259,6 +263,8 @@ test('preserves Microlink API error payload, status code, and response headers',
       JSON.stringify({
         status: 'fail',
         code: 'ERATELIMIT',
+        id: 'err_123',
+        report: 'https://example.com/report/err_123',
         message: 'Rate limit reached.',
         more: 'https://microlink.io/eratelimit',
         data: {
@@ -286,6 +292,8 @@ test('preserves Microlink API error payload, status code, and response headers',
   assert.equal(result.statusCode, 429)
   assert.equal(result.body.status, 'fail')
   assert.equal(result.body.code, 'ERATELIMIT')
+  assert.equal(result.body.id, 'err_123')
+  assert.equal(result.body.report, 'https://example.com/report/err_123')
   assert.match(result.body.message, /^ERATELIMIT, Rate limit reached\.$/)
   assert.equal(result.body.more, 'https://microlink.io/eratelimit')
   assert.equal(result.headers['x-request-id'], 'req_123')

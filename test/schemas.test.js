@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 
 import {
+  audioInputSchema,
   extractInputSchema,
   insightsInputSchema,
   markdownInputSchema,
@@ -9,7 +10,8 @@ import {
   paletteInputSchema,
   pdfInputSchema,
   screenshotInputSchema,
-  textInputSchema
+  textInputSchema,
+  videoInputSchema
 } from '../src/schemas.js'
 
 test('extract schema accepts minimal valid payload', () => {
@@ -53,6 +55,15 @@ test('screenshot schema rejects unknown nested screenshot keys', () => {
   assert.equal(result.success, false)
 })
 
+test('screenshot schema accepts boolean toggle', () => {
+  const result = screenshotInputSchema.safeParse({
+    url: 'https://microlink.io',
+    screenshot: true
+  })
+
+  assert.equal(result.success, true)
+})
+
 test('pdf schema rejects scale values out of allowed range', () => {
   const result = pdfInputSchema.safeParse({
     url: 'https://microlink.io',
@@ -62,6 +73,15 @@ test('pdf schema rejects scale values out of allowed range', () => {
   })
 
   assert.equal(result.success, false)
+})
+
+test('pdf schema accepts boolean toggle', () => {
+  const result = pdfInputSchema.safeParse({
+    url: 'https://microlink.io',
+    pdf: true
+  })
+
+  assert.equal(result.success, true)
 })
 
 test('data schema accepts a valid single rule object', () => {
@@ -184,6 +204,35 @@ test('insights schema accepts lighthouse config object', () => {
       },
       technologies: true
     }
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('insights schema accepts boolean toggle', () => {
+  const result = insightsInputSchema.safeParse({
+    url: 'https://microlink.io',
+    insights: true
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('video schema accepts proxy configuration', () => {
+  const result = videoInputSchema.safeParse({
+    url: 'https://microlink.io',
+    proxy: {
+      endpoint: 'https://proxy.example.com'
+    }
+  })
+
+  assert.equal(result.success, true)
+})
+
+test('audio schema accepts proxy configuration', () => {
+  const result = audioInputSchema.safeParse({
+    url: 'https://microlink.io',
+    proxy: 'residential'
   })
 
   assert.equal(result.success, true)

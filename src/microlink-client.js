@@ -5,6 +5,8 @@ const RESPONSE_HEADER_KEYS = [
   'x-pricing-plan',
   'x-cache-status',
   'x-cache-ttl',
+  'cf-cache-status',
+  'cache-control',
   'x-rate-limit-limit',
   'x-rate-limit-remaining',
   'x-rate-limit-reset',
@@ -115,7 +117,7 @@ function toErrorBody (error, requestUrl) {
 
   const payload = {}
 
-  for (const key of ['status', 'data', 'more', 'code', 'message', 'url']) {
+  for (const key of ['status', 'data', 'more', 'code', 'id', 'report', 'message', 'url']) {
     if (error[key] !== undefined) {
       payload[key] = error[key]
     }

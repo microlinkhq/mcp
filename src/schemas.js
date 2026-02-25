@@ -3,6 +3,7 @@ import { z } from 'zod'
 const stringOrStringArraySchema = z.union([z.string(), z.array(z.string()).min(1)])
 const stringOrNumberSchema = z.union([z.string(), z.number()])
 const toggledObjectSchema = z.union([z.boolean(), z.object({}).catchall(z.unknown())])
+const proxySchema = z.union([z.string().min(1), z.object({}).catchall(z.unknown())])
 
 // A single data-extraction rule: CSS selector(s) + optional attr/type/evaluate/nested data.
 const dataSingleRuleSchema = z
@@ -135,7 +136,7 @@ const visualSchema = {
   mediaType: z.enum(['screen', 'print']).optional(),
   modules: stringOrStringArraySchema.optional(),
   prerender: z.union([z.literal('auto'), z.boolean()]).optional(),
-  proxy: z.union([z.string().min(1), z.object({}).catchall(z.unknown())]).optional(),
+  proxy: proxySchema.optional(),
   retry: z.number().int().nonnegative().optional(),
   scripts: stringOrStringArraySchema.optional(),
   scroll: z.string().min(1).optional(),
@@ -164,25 +165,26 @@ export const extractInputSchema = baseSchema
 export const screenshotInputSchema = baseSchema
   .extend(visualSchema)
   .extend({
-    screenshot: screenshotConfigSchema.optional()
+    screenshot: z.union([z.boolean(), screenshotConfigSchema]).optional()
   })
   .strict()
 
 export const pdfInputSchema = baseSchema
   .extend(visualSchema)
   .extend({
-    pdf: pdfConfigSchema.optional()
+    pdf: z.union([z.boolean(), pdfConfigSchema]).optional()
   })
   .strict()
 
 export const insightsInputSchema = baseSchema
   .extend({
-    insights: insightsConfigSchema.optional()
+    insights: z.union([z.boolean(), insightsConfigSchema]).optional()
   })
   .strict()
 
 export const audioInputSchema = baseSchema
   .extend({
+    proxy: proxySchema.optional(),
     meta: z.union([z.boolean(), metaConfigSchema]).optional(),
     audio: z.boolean().optional()
   })
@@ -190,6 +192,7 @@ export const audioInputSchema = baseSchema
 
 export const videoInputSchema = baseSchema
   .extend({
+    proxy: proxySchema.optional(),
     meta: z.union([z.boolean(), metaConfigSchema]).optional(),
     video: z.boolean().optional()
   })
