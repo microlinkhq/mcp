@@ -4,7 +4,6 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that ex
 
 Links:
 
-- Website: [microlink.io](https://microlink.io)
 - MCP integration page: [microlink.io/integration/mcp](https://microlink.io/integration/mcp)
 - npm package: [@microlink/mcp](https://www.npmjs.com/package/@microlink/mcp)
 
@@ -28,6 +27,8 @@ npx -y @microlink/mcp
 npm install -g @microlink/mcp
 microlink-mcp
 ```
+
+During installation, the package prints a console reminder about the free Microlink plan (`50 requests/day`) and where to get an API key for higher/unlimited usage at [microlink.io/#pricing](https://microlink.io/#pricing).
 
 ### Local development (this repository)
 
@@ -59,7 +60,7 @@ npx -y @microlink/mcp
 
 ### Claude Desktop
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Edit `~/Library/Application\ Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
