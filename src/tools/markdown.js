@@ -1,16 +1,16 @@
 import { markdownInputSchema } from '../schemas.js'
-import { registerEmbed } from './register.js'
+import { register } from './register.js'
 
 export function markdown (server) {
-  registerEmbed(
+  register(
     server,
     'microlink_markdown',
     [
       'Convert any public URL to Markdown via Microlink.',
-      'Returns the page content as clean Markdown text.',
+      'Returns JSON output with Markdown content under `data.markdown`.',
       'Useful for extracting readable content from web pages, articles, and documentation.'
     ].join(' '),
     markdownInputSchema,
-    { data: { markdown: { attr: 'markdown' } }, embed: 'markdown', meta: false }
+    { data: { markdown: { attr: 'markdown' } }, meta: false }
   )
 }

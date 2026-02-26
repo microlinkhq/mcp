@@ -1,16 +1,16 @@
 import { textInputSchema } from '../schemas.js'
-import { registerEmbed } from './register.js'
+import { register } from './register.js'
 
 export function text (server) {
-  registerEmbed(
+  register(
     server,
     'microlink_text',
     [
       'Extract plain text from any public URL via Microlink.',
-      'Returns the page content as clean plain text, stripped of all HTML and formatting.',
+      'Returns JSON output with plain text content under `data.text`.',
       'Useful for getting raw text content from web pages.'
     ].join(' '),
     textInputSchema,
-    { data: { text: { attr: 'text' } }, embed: 'text', meta: false }
+    { data: { text: { attr: 'text' } }, meta: false }
   )
 }

@@ -146,12 +146,11 @@ Add to your Cursor MCP settings (`.cursor/mcp.json`):
 
 ### Response shape
 
-- JSON tools (`microlink_extract`, `microlink_screenshot`, `microlink_pdf`, `microlink_video`, `microlink_audio`, `microlink_insights`, `microlink_meta`, `microlink_palette`) return `structuredContent` with:
+- All tools (`microlink_extract`, `microlink_screenshot`, `microlink_pdf`, `microlink_video`, `microlink_audio`, `microlink_insights`, `microlink_meta`, `microlink_palette`, `microlink_markdown`, `microlink_text`) return `structuredContent` with:
   - `endpoint`, `requestUrl`, `finalUrl`, `statusCode`, `responseHeaders`, `microlink`
   - `microlink` preserves Microlink API JSend payload (`status`, `data`, and error fields like `code`, `id`, `message`, `more`, `report`).
   - `responseHeaders` includes key cache/rate headers (such as `x-cache-status`, `cf-cache-status`, `cache-control`, `x-rate-limit-*`) when present.
   - MCP `isError` is set when transport fails or when `microlink.status !== "success"`.
-- Embed tools (`microlink_markdown`, `microlink_text`) return plain text in `content[0].text`.
 
 Parameters labeled `PRO` in the official Microlink docs require a paid plan.
 For compatibility with some MCP clients:
@@ -377,7 +376,7 @@ Color data is nested under each image field (e.g. `data.image.palette`). Useful 
 
 ### `microlink_markdown`
 
-Convert any public URL to Markdown. Returns the page content as clean Markdown text, useful for extracting readable content from web pages, articles, and documentation.
+Convert any public URL to Markdown. Returns JSON output with Markdown content in `microlink.data.markdown`, useful for extracting readable content from web pages, articles, and documentation.
 
 **Key parameters:**
 
@@ -390,7 +389,7 @@ Convert any public URL to Markdown. Returns the page content as clean Markdown t
 
 ### `microlink_text`
 
-Extract plain text from any public URL. Returns the page content stripped of all HTML and formatting.
+Extract plain text from any public URL. Returns JSON output with plain text content in `microlink.data.text`.
 
 **Key parameters:**
 
