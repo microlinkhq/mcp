@@ -1,27 +1,91 @@
 {
   "name": "@microlink/mcp",
   "description": "MCP server for Microlink API",
+  "homepage": "https://github.com/microlinkhq/mcp",
   "version": "0.1.0",
-  "type": "module",
-  "bin": {
-    "microlink-mcp": "./bin/microlink-mcp.js"
-  },
+  "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
   },
-  "engines": {
-    "node": ">=20"
+  "bin": {
+    "microlink-mcp": "./bin/microlink-mcp.js"
   },
-  "scripts": {
-    "start": "node src/index.js",
-    "postinstall": "node scripts/postinstall.js",
-    "test": "node --test test/*.test.js"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/microlinkhq/mcp.git"
   },
+  "bugs": {
+    "url": "https://github.com/microlinkhq/mcp/issues"
+  },
+  "keywords": [
+    "api",
+    "mcp",
+    "microlink",
+    "model-context-protocol",
+    "scraping",
+    "screenshot",
+    "server"
+  ],
   "dependencies": {
     "@microlink/mql": "~0.14.2",
     "@modelcontextprotocol/sdk": "1.26.0",
     "zod": "~4.3.6"
   },
+  "devDependencies": {
+    "@commitlint/cli": "latest",
+    "@commitlint/config-conventional": "latest",
+    "ava": "latest",
+    "c8": "latest",
+    "ci-publish": "latest",
+    "conventional-changelog-cli": "latest",
+    "finepack": "latest",
+    "git-authors-cli": "latest",
+    "github-generate-release": "latest",
+    "nano-staged": "latest",
+    "simple-git-hooks": "latest",
+    "standard": "latest",
+    "standard-version": "latest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "src"
+  ],
+  "scripts": {
+    "contributors": "(git-authors-cli && finepack && git add package.json && git commit -m 'build: contributors' --no-verify) || true",
+    "postinstall": "node scripts/postinstall.js",
+    "postrelease": "pnpm release:tags && pnpm release:github && (ci-publish || pnpm publish --access=public)",
+    "release": "pnpm release:version && pnpm release:changelog && pnpm release:commit && pnpm release:tag",
+    "release:changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+    "release:commit": "git add package.json CHANGELOG.md && git commit -m \"chore(release): $(node -p \"require('./package.json').version\")\"",
+    "release:github": "github-generate-release",
+    "release:tag": "git tag -a v$(node -p \"require('./package.json').version\") -m \"v$(node -p \"require('./package.json').version\")\"",
+    "release:tags": "git push origin HEAD:master --follow-tags",
+    "release:version": "standard-version --skip.changelog --skip.commit --skip.tag",
+    "start": "node src/index.js",
+    "test": "node --test test/*.test.js"
+  },
   "license": "MIT",
-  "private": true
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "nano-staged": {
+    "*.js": [
+      "npx @kikobeats/prettier-standard",
+      "standard --fix"
+    ],
+    "package.json": [
+      "finepack"
+    ]
+  },
+  "simple-git-hooks": {
+    "commit-msg": "npx commitlint --edit",
+    "pre-commit": "npx nano-staged"
+  },
+  "type": "module"
 }
