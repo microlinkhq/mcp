@@ -39,7 +39,7 @@
   "dependencies": {
     "@microlink/mql": "~0.16.1",
     "@modelcontextprotocol/sdk": "1.29.0",
-    "zod": "~4.3.6"
+    "zod": "~4.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "latest",
