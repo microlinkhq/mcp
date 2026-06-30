@@ -10,6 +10,16 @@
   "bin": {
     "microlink-mcp": "./bin/microlink-mcp.js"
   },
+  "contributors": [
+    {
+      "name": "Joseba",
+      "email": "josebalega@gmail.com"
+    },
+    {
+      "name": "Kiko Beats",
+      "email": "josefrancisco.verdu@gmail.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/microlinkhq/mcp.git"
