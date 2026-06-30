@@ -2,7 +2,7 @@
   "name": "@microlink/mcp",
   "description": "MCP server for Microlink API",
   "homepage": "https://github.com/microlinkhq/mcp",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
@@ -10,6 +10,16 @@
   "bin": {
     "microlink-mcp": "./bin/microlink-mcp.js"
   },
+  "contributors": [
+    {
+      "name": "Joseba",
+      "email": "josebalega@gmail.com"
+    },
+    {
+      "name": "Kiko Beats",
+      "email": "josefrancisco.verdu@gmail.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/microlinkhq/mcp.git"
@@ -28,7 +38,7 @@
   ],
   "dependencies": {
     "@microlink/mql": "~0.16.1",
-    "@modelcontextprotocol/sdk": "1.26.0",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "zod": "~4.3.6"
   },
   "devDependencies": {
