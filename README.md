@@ -1,15 +1,25 @@
 # Microlink MCP
 
+<div align="center">
+  <img src="https://github.com/microlinkhq/cdn/raw/master/dist/logo/banner.png#gh-light-mode-only" alt="microlink logo">
+  <img src="https://github.com/microlinkhq/cdn/raw/master/dist/logo/banner-dark.png#gh-dark-mode-only" alt="microlink logo">
+</div>
+
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that exposes [Microlink API](https://microlink.io) capabilities to AI assistants. Runs over stdio transport, making it compatible with Claude Desktop, VS Code, Cursor, and any other MCP-capable client.
 
-Links:
+It turns natural-language requests into Microlink calls: take screenshots, generate PDFs, extract metadata or readable text, detect video/audio sources, run Lighthouse audits, and scrape custom fields with CSS selectors, all without leaving the assistant.
 
-- MCP integration page: [microlink.io/integration/mcp](https://microlink.io/integration/mcp)
-- npm package: [@microlink/mcp](https://www.npmjs.com/package/@microlink/mcp)
+See the [MCP integration page](https://microlink.io/integration/mcp) for a guided walkthrough, or the [`@microlink/mcp`](https://www.npmjs.com/package/@microlink/mcp) npm package.
 
-## Requirements
+## Table of contents
 
-- Node.js >= 20
+- [Install](#install)
+- [MCP client configuration](#mcp-client-configuration)
+- [Usage](#usage)
+- [Tools](#tools)
+- [Authentication](#authentication)
+- [Development](#development)
+- [License](#license)
 
 ## Install
 
@@ -29,32 +39,6 @@ microlink-mcp
 ```
 
 During installation, the package prints a console reminder about the free Microlink plan (`50 requests/day`) and where to get an API key for higher/unlimited usage at [microlink.io/#pricing](https://microlink.io/#pricing).
-
-### Local development (this repository)
-
-```bash
-npm install
-```
-
-## Run
-
-Local repository:
-
-```bash
-npm start
-```
-
-Global install:
-
-```bash
-microlink-mcp
-```
-
-Without installation:
-
-```bash
-npx -y @microlink/mcp
-```
 
 ## MCP client configuration
 
@@ -128,6 +112,31 @@ Add to your Cursor MCP settings (`.cursor/mcp.json`):
 }
 ```
 
+## Usage
+
+Once the server is configured, talk to your assistant in plain language. It picks the right tool and parameters for you:
+
+- *"Take a full-page screenshot of https://example.com in dark mode."* → `microlink_screenshot`
+- *"Generate a Letter-size PDF of https://example.com."* → `microlink_pdf`
+- *"Get the title, description, and image for https://example.com."* → `microlink_meta`
+- *"Convert https://news.ycombinator.com to Markdown."* → `microlink_markdown`
+- *"Find the playable video in this YouTube link."* → `microlink_video`
+- *"Run a Lighthouse performance audit on https://example.com."* → `microlink_insights`
+- *"Scrape every article title from this page using the `.title` selector."* → `microlink_extract` with `data`
+
+Tools can also be invoked directly. Every tool takes a `url` and returns `structuredContent` (see [Response shape](#response-shape)):
+
+```json
+{
+  "name": "microlink_screenshot",
+  "arguments": {
+    "url": "https://example.com",
+    "screenshot": { "fullPage": true, "type": "png" },
+    "colorScheme": "dark"
+  }
+}
+```
+
 ## Tools
 
 ### Capabilities at a glance
@@ -169,7 +178,9 @@ For `screenshot`, `pdf`, and `insights`, use `true` for defaults or an object fo
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `url` | `string` | The URL to extract data from *(required)* |
+| `apiKey` | `string` | Microlink API key *(optional; see [Authentication](#authentication))* |
 | `data` | `object` | Custom CSS-selector extraction rules |
+| `meta` | `boolean \| object` | Include/exclude normalized metadata fields |
 | `embed` | `string` | Microlink embed mode |
 | `iframe` | `boolean \| object` | Include iframe payload options |
 | `function` | `string` | Custom Microlink function hook |
@@ -183,6 +194,7 @@ For `screenshot`, `pdf`, and `insights`, use `true` for defaults or an object fo
 | `adblock` | `boolean` | Enable ad blocking |
 | `animations` | `boolean` | Enable/disable animations |
 | `device` | `string` | Emulate a device (e.g. `"iPhone 12"`) |
+| `colorScheme` | `"light" \| "dark" \| "no-preference"` | Preferred color scheme |
 | `viewport` | `object` | Custom viewport dimensions |
 | `click` | `string \| string[]` | CSS selector(s) to click before capture |
 | `scroll` | `string` | CSS selector to scroll to |
@@ -402,7 +414,7 @@ Extract plain text from any public URL. Returns JSON output with plain text cont
 
 ## Authentication
 
-The API key is resolved from these sources in order of priority:
+Every tool accepts an optional `apiKey` parameter. The key is resolved from these sources in order of priority:
 
 1. `apiKey` field in the tool input parameters
 2. `Authorization: Bearer <key>` header from the MCP request
@@ -415,13 +427,9 @@ If an API key is present, requests are sent to `https://pro.microlink.io`; other
 
 When the free endpoint returns `429`, this MCP adds a clear hint in the tool error message: free daily quota reached (`50 requests/day`) and upgrade/API key guidance at [microlink.io/#pricing](https://microlink.io/#pricing).
 
-## Development
-
-```bash
-# Run tests
-npm test
-```
-
 ## License
 
-MIT
+**microlink** © [Microlink](https://microlink.io), released under the [MIT](https://github.com/microlinkhq/mcp/blob/master/LICENSE.md) License.<br>
+Authored and maintained by [Kiko Beats](https://kikobeats.com) with help from [contributors](https://github.com/microlinkhq/mcp/contributors).
+
+> [microlink.io](https://microlink.io) · GitHub [microlinkhq](https://github.com/microlinkhq) · X [@microlinkhq](https://x.com/microlinkhq)
