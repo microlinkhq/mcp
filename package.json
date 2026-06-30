@@ -2,7 +2,7 @@
   "name": "@microlink/mcp",
   "description": "MCP server for Microlink API",
   "homepage": "https://github.com/microlinkhq/mcp",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
@@ -92,6 +92,9 @@
     "package.json": [
       "finepack"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "simple-git-hooks": {
     "commit-msg": "npx commitlint --edit",
